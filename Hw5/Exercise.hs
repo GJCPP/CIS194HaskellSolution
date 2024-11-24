@@ -11,7 +11,6 @@ import GHC.Integer (Integer)
 import Control.Category (Category(id))
 import StackVM (stackVM)
 import qualified Data.Bits as Expr
-import qualified Data.Map as M
 
 ------------------------------ Exercise 2 ------------------------------
 

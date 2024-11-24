@@ -1,22 +1,14 @@
 module PrimeSieve where
 
-import Data.List
-import qualified Data.HashSet as HashSet
-import qualified Data.IntSet as IntSet
+import Data.Maybe
+import Data.Array
 
-comp :: (Num a, Ord a) => [a] -> [a] -> [a]
-comp xs ys = [ x + y + 2 * x * y | x <- xs, y <- ys, x <= y ]
-
+cross :: Integer -> Array Integer Bool
+cross n = array
+    (1, n) $ [(i, True) | i <- [1..n]] ++ [(ind i j, False) | i <- [1..n], j <- takeWhile (\x -> ind i x <= n) [i..]]
+    where
+        ind i j = i + j + 2 * i * j
 
 sieveSundaram :: Integer -> [Integer]
-sieveSundaram n = map (\x -> x * 2 + 1) ([1..n] \\ cross n)
-    where cross n = comp [1..n] [1..n]
-    -- The operator "\\" has complexity $O(nm)$, which makes it $O(n^3) and is terrible for large input, but anyway...
-
-sieveSundaram' n = map (\x -> x * 2 + 1) . filter (\x -> not $ HashSet.member x (cross n)) $ [1..n]
-    where cross n = HashSet.fromList $ comp [1..n] [1..n]
-    -- Note: HashSet required.
-
-sieveSundaram'' n = map (\x -> x * 2 + 1) . filter (\x -> not $ IntSet.member x (cross n)) $ [1..n]
-    where cross n = IntSet.fromList $ comp [1..n] [1..n]
-
+sieveSundaram n = mapMaybe func $ assocs (cross n)
+    where func (x, y) = if y then Just (2 * x + 1) else Nothing
